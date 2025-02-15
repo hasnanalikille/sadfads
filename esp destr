@@ -1,0 +1,42 @@
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+
+-- Function to clean up ESP elements for a specific player
+local function destroyESPForPlayer(player)
+    -- Find the folder holding ESP elements in CoreGui
+    local CoreGuiFolder = CoreGui:FindFirstChild(player.Name .. "_ESP")
+    
+    -- If the folder exists, destroy all elements inside it
+    if CoreGuiFolder then
+        -- Destroy all child objects (adornments, BillboardGuis, etc.)
+        for _, child in pairs(CoreGuiFolder:GetChildren()) do
+            if child:IsA("BoxHandleAdornment") or child:IsA("BillboardGui") then
+                child:Destroy()  -- Destroy the adornment or BillboardGui
+            end
+        end
+        -- Finally, destroy the folder itself
+        CoreGuiFolder:Destroy()
+    end
+end
+
+-- Function to remove all ESPs and cleanup connections
+local function destroyAllESP()
+    -- Loop through all players in the game and destroy their ESP if it exists
+    for _, player in pairs(Players:GetPlayers()) do
+        destroyESPForPlayer(player)
+    end
+    
+    -- Disconnect any RenderStepped functions that are continuously updating ESPs
+    if RunService.RenderStepped then
+        -- Disconnecting all active RenderStepped connections
+        for _, connection in pairs(RunService:GetConnections()) do
+            if connection.Name == "RenderStepped" then
+                connection:Disconnect()
+            end
+        end
+    end
+end
+
+-- Call this function to clean up all ESP elements
+destroyAllESP()
