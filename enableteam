@@ -1,0 +1,42 @@
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+
+-- Specify the team name you want to enable ESP for
+local targetTeamName = "TeamName"  -- Change this to the name of the team
+
+-- Function to create ESP for a player
+local function createESPForPlayer(player)
+    -- (Insert your ESP creation code here, e.g., the previously discussed ESP creation functions)
+    -- This should create the ESP for the player (e.g., BoxHandleAdornment, BillboardGui, etc.)
+end
+
+-- Function to enable ESP for players on the specified team
+local function enableESPForTeam()
+    for _, player in pairs(Players:GetPlayers()) do
+        -- Check if the player is on the target team
+        if player.Team and player.Team.Name == targetTeamName then
+            -- Enable ESP for players on the target team
+            createESPForPlayer(player)
+        end
+    end
+end
+
+-- Enable ESP for players when they join or when the team changes
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if player.Team and player.Team.Name == targetTeamName then
+            createESPForPlayer(player)
+        end
+    end)
+
+    -- Check for team change during gameplay
+    player:GetPropertyChangedSignal("Team"):Connect(function()
+        if player.Team and player.Team.Name == targetTeamName then
+            createESPForPlayer(player)
+        end
+    end)
+end)
+
+-- Initially enable ESP for players already in the game
+enableESPForTeam()
