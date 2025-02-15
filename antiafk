@@ -1,0 +1,22 @@
+-- Anti-AFK Script for Roblox with Jump every 5 minutes
+local vu = game:GetService("VirtualUser")
+local player = game.Players.LocalPlayer
+local humanoid = player.Character:WaitForChild("Humanoid")
+
+-- Function to prevent AFK
+player.Idled:Connect(function()
+    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)  -- Wait 1 second (you can adjust the time)
+    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
+
+-- Function to make the character jump every 5 minutes
+while true do
+    wait(300) -- Wait 300 seconds (5 minutes)
+    if humanoid and humanoid.Health > 0 then
+        humanoid.Jump = true  -- Make the character jump
+        print("Character jumped!")
+    end
+end
+
+print("Anti-AFK script with jump is now active!")
