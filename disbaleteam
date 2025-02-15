@@ -1,0 +1,50 @@
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+
+-- Specify the team name you want to disable ESP for
+local targetTeamName = "TeamName"  -- Change this to the name of the team
+
+-- Function to destroy ESP for a player
+local function destroyESPForPlayer(player)
+    local CoreGuiFolder = CoreGui:FindFirstChild(player.Name .. "_ESP")
+    if CoreGuiFolder then
+        -- Destroy all child objects (adornments, BillboardGuis, etc.)
+        for _, child in pairs(CoreGuiFolder:GetChildren()) do
+            if child:IsA("BoxHandleAdornment") or child:IsA("BillboardGui") then
+                child:Destroy()  -- Destroy the adornment or BillboardGui
+            end
+        end
+        -- Finally, destroy the folder itself
+        CoreGuiFolder:Destroy()
+    end
+end
+
+-- Function to disable ESP for players on the specified team
+local function disableESPForTeam()
+    for _, player in pairs(Players:GetPlayers()) do
+        -- Check if the player is on the target team
+        if player.Team and player.Team.Name == targetTeamName then
+            -- Destroy ESP for players on the target team
+            destroyESPForPlayer(player)
+        end
+    end
+end
+
+-- Disable ESP for players when they join or when the team changes
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if player.Team and player.Team.Name == targetTeamName then
+            destroyESPForPlayer(player)
+        end
+    end)
+
+    -- Check for team change during gameplay
+    player:GetPropertyChangedSignal("Team"):Connect(function()
+        if player.Team and player.Team.Name == targetTeamName then
+            destroyESPForPlayer(player)
+        end
+    end)
+end)
+
+-- Initially disable ESP for players already in the game
+disableESPForTeam()
