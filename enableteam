@@ -3,40 +3,65 @@ local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 
 -- Specify the team name you want to enable ESP for
-local targetTeamName = "TeamName"  -- Change this to the name of the team
+local targetTeamName = "TargetTeamName"  -- Change this to the name of the team you want to enable ESP for
+local myTeamName = game.Players.LocalPlayer.Team.Name  -- Get the current player's team
 
 -- Function to create ESP for a player
 local function createESPForPlayer(player)
-    -- (Insert your ESP creation code here, e.g., the previously discussed ESP creation functions)
-    -- This should create the ESP for the player (e.g., BoxHandleAdornment, BillboardGui, etc.)
+    -- (Insert your ESP creation code here, e.g., BoxHandleAdornment, BillboardGui)
 end
 
--- Function to enable ESP for players on the specified team
-local function enableESPForTeam()
+-- Function to destroy ESP for a player
+local function destroyESPForPlayer(player)
+    local CoreGuiFolder = CoreGui:FindFirstChild(player.Name .. "_ESP")
+    if CoreGuiFolder then
+        -- Destroy all child objects (adornments, BillboardGuis, etc.)
+        for _, child in pairs(CoreGuiFolder:GetChildren()) do
+            if child:IsA("BoxHandleAdornment") or child:IsA("BillboardGui") then
+                child:Destroy()  -- Destroy the adornment or BillboardGui
+            end
+        end
+        -- Finally, destroy the folder itself
+        CoreGuiFolder:Destroy()
+    end
+end
+
+-- Function to enable ESP for players on the target team and disable it for players on your team
+local function enableESPForTargetTeam()
     for _, player in pairs(Players:GetPlayers()) do
-        -- Check if the player is on the target team
         if player.Team and player.Team.Name == targetTeamName then
             -- Enable ESP for players on the target team
             createESPForPlayer(player)
+        elseif player.Team and player.Team.Name == myTeamName then
+            -- Disable ESP for players on your own team
+            destroyESPForPlayer(player)
         end
     end
 end
 
--- Enable ESP for players when they join or when the team changes
+-- Function to listen for changes in team and apply ESP logic accordingly
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
         if player.Team and player.Team.Name == targetTeamName then
+            -- Enable ESP for the player on the target team
             createESPForPlayer(player)
+        elseif player.Team and player.Team.Name == myTeamName then
+            -- Disable ESP for players on your team
+            destroyESPForPlayer(player)
         end
     end)
 
     -- Check for team change during gameplay
     player:GetPropertyChangedSignal("Team"):Connect(function()
         if player.Team and player.Team.Name == targetTeamName then
+            -- Enable ESP if player switches to the target team
             createESPForPlayer(player)
+        elseif player.Team and player.Team.Name == myTeamName then
+            -- Disable ESP if player switches to your team
+            destroyESPForPlayer(player)
         end
     end)
 end)
 
--- Initially enable ESP for players already in the game
-enableESPForTeam()
+-- Initially enable ESP for players on the target team and disable for players on your team
+enableESPForTargetTeam()
