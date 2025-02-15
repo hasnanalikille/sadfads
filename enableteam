@@ -6,14 +6,12 @@ local RunService = game:GetService("RunService")
 local targetTeamName = "TargetTeamName"  -- Change this to the name of the team you want to enable ESP for
 local myTeamName = game.Players.LocalPlayer.Team.Name  -- Get the current player's team
 
--- Function to create ESP for a player
-local function createESPForPlayer(player)
-    -- (Insert your ESP creation code here, e.g., BoxHandleAdornment, BillboardGui)
-end
-
--- Function to destroy ESP for a player
+-- Function to clean up ESP elements for a specific player
 local function destroyESPForPlayer(player)
+    -- Find the folder holding ESP elements in CoreGui
     local CoreGuiFolder = CoreGui:FindFirstChild(player.Name .. "_ESP")
+    
+    -- If the folder exists, destroy all elements inside it
     if CoreGuiFolder then
         -- Destroy all child objects (adornments, BillboardGuis, etc.)
         for _, child in pairs(CoreGuiFolder:GetChildren()) do
@@ -24,6 +22,11 @@ local function destroyESPForPlayer(player)
         -- Finally, destroy the folder itself
         CoreGuiFolder:Destroy()
     end
+end
+
+-- Function to create ESP for a player (use your ESP creation code here)
+local function createESPForPlayer(player)
+    -- (Insert your ESP creation code here, like BoxHandleAdornment, BillboardGui)
 end
 
 -- Function to enable ESP for players on the target team and disable it for players on your team
